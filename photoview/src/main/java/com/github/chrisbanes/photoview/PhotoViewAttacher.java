@@ -90,6 +90,7 @@ public class PhotoViewAttacher implements View.OnTouchListener,
 
     private boolean mZoomEnabled = true;
     private ScaleType mScaleType = ScaleType.FIT_CENTER;
+    private int startDraggingFromTheEdge = EDGE_NONE;
 
     private OnGestureListener onGestureListener = new OnGestureListener() {
         @Override
@@ -104,17 +105,24 @@ public class PhotoViewAttacher implements View.OnTouchListener,
             mSuppMatrix.postTranslate(dx, dy);
             checkAndDisplayMatrix();
 
-        /*
-         * Here we decide whether to let the ImageView's parent to start taking
-         * over the touch event.
-         *
-         * First we check whether this function is enabled. We never want the
-         * parent to take over if we're scaling. We then check the edge we're
-         * on, and the direction of the scroll (i.e. if we're pulling against
-         * the edge, aka 'overscrolling', let the parent take over).
-         */
+            if (mScaleDragDetector.isStartDragging()) {
+                startDraggingFromTheEdge = mScrollEdge;
+            }
+
+            /*
+             * Here we decide whether to let the ImageView's parent to start taking
+             * over the touch event.
+             *
+             * First we check whether this function is enabled. We never want the
+             * parent to take over if we're scaling. We then check the edge we're
+             * on, and the direction of the scroll (i.e. if we're pulling against
+             * the edge, aka 'overscrolling', let the parent take over).
+             */
             ViewParent parent = mImageView.getParent();
-            if (mAllowParentInterceptOnEdge && !mScaleDragDetector.isScaling() && !mBlockParentIntercept) {
+            if (mAllowParentInterceptOnEdge &&
+                    !mScaleDragDetector.isScaling() &&
+                    !mBlockParentIntercept &&
+                    startDraggingFromTheEdge != EDGE_NONE) {
                 if (mScrollEdge == EDGE_BOTH
                         || (mScrollEdge == EDGE_LEFT && dx >= 1f)
                         || (mScrollEdge == EDGE_RIGHT && dx <= -1f)) {
@@ -357,6 +365,8 @@ public class PhotoViewAttacher implements View.OnTouchListener,
                     // If we're flinging, and the user presses down, cancel
                     // fling
                     cancelFling();
+
+                    startDraggingFromTheEdge = EDGE_NONE;
                     break;
 
                 case MotionEvent.ACTION_CANCEL:

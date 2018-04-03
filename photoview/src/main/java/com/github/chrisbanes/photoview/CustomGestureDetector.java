@@ -39,6 +39,7 @@ class CustomGestureDetector {
     private final float mTouchSlop;
     private final float mMinimumVelocity;
     private OnGestureListener mListener;
+    private boolean mIsStartDragging = false;
 
     CustomGestureDetector(Context context, OnGestureListener listener) {
         final ViewConfiguration configuration = ViewConfiguration
@@ -98,6 +99,10 @@ class CustomGestureDetector {
         return mIsDragging;
     }
 
+    public boolean isStartDragging() {
+        return mIsStartDragging;
+    }
+
     public boolean onTouchEvent(MotionEvent ev) {
         try {
             mDetector.onTouchEvent(ev);
@@ -122,6 +127,7 @@ class CustomGestureDetector {
                 mLastTouchX = getActiveX(ev);
                 mLastTouchY = getActiveY(ev);
                 mIsDragging = false;
+                mIsStartDragging = true;
                 break;
             case MotionEvent.ACTION_MOVE:
                 final float x = getActiveX(ev);
@@ -142,6 +148,7 @@ class CustomGestureDetector {
                     if (null != mVelocityTracker) {
                         mVelocityTracker.addMovement(ev);
                     }
+                    mIsStartDragging = true;
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
