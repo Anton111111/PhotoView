@@ -21,6 +21,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.widget.ImageView;
@@ -29,10 +30,10 @@ import android.widget.ImageView;
  * A zoomable {@link ImageView}. See {@link PhotoViewAttacher} for most of the details on how the zooming
  * is accomplished
  */
-public class PhotoView extends ImageView {
+public class PhotoView extends AppCompatImageView {
 
     private PhotoViewAttacher attacher;
-    private ScaleType pendingScaleType;
+    private ImageView.ScaleType pendingScaleType;
 
     public PhotoView(Context context) {
         this(context, null);
@@ -47,11 +48,6 @@ public class PhotoView extends ImageView {
         init();
     }
 
-    @TargetApi(21)
-    public PhotoView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init();
-    }
 
     private void init() {
         attacher = new PhotoViewAttacher(this);
